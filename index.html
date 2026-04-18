@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CPA Negativo · Guia Estratégico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Barlow+Condensed:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet" crossorigin>
+
+<style>
+:root {
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-body:    'Barlow Condensed', 'Trebuchet MS', sans-serif;
+  --font-mono:    'Share Tech Mono', 'Courier New', monospace;
+
+  --bg:      #080608;
+  --bg2:     #0e0b0e;
+  --bg3:     #141014;
+  --felt:    #0a1a0e;
+
+  --gold:    #c8962a;
+  --gold2:   #e8b84a;
+  --gold3:   #f5d070;
+  --gold-dim:#7a5a18;
+  --red:     #cc2233;
+  --red2:    #e83344;
+  --red-dim: #661118;
+  --cream:   #f0e8d0;
+  --text:    #e8dfc8;
+  --text-dim:#a09070;
+  --text-muted:#503c28;
+
+  --border-g: rgba(200,150,42,0.2);
+  --border-r: rgba(200,40,50,0.2);
+  --glow-g:   rgba(200,150,42,0.35);
+  --glow-r:   rgba(204,34,51,0.35);
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+/* ── CURSOR desktop ── */
+@media(hover:hover) and (pointer:fine){
+  *,*::before,*::after{ cursor:none !important; }
+  #cur-dot{
+    position:fixed; width:6px; height:6px; border-radius:50%;
+    background:var(--gold2); pointer-events:none; z-index:99999;
+    transform:translate(-50%,-50%);
+    box-shadow:0 0 10px var(--gold),0 0 20px rgba(200,150,42,0.3);
+  }
+  #cur-ring{
+    position:fixed; width:30px; height:30px; border-radius:50%;
+    border:1px solid rgba(200,150,42,0.4); pointer-events:none; z-index:99998;
+    transform:translate(-50%,-50%);
+    transition:width .3s ease,height .3s ease,border-color .3s ease;
+  }
+  #cur-ring.h{ width:44px; height:44px; border-color:rgba(200,50,60,0.7); background:rgba(200,50,60,0.04); }
+}
+@media(hover:none),(pointer:coarse){
+  #cur-dot,#cur-ring{ display:none !important; }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{ width:3px; }
+::-webkit-scrollbar-track{ background:var(--bg); }
+::-webkit-scrollbar-thumb{ background:linear-gradient(180deg,var(--gold),var(--red)); border-radius:2px; }
+
+/* ── PROGRESS ── */
+#prog{
+  position:fixed; top:0; left:0; height:2px; width:0;
+  background:linear-gradient(90deg,var(--red),var(--gold),var(--gold3));
+  z-index:10000; box-shadow:0 0 8px var(--gold);
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:17px; line-height:1.75;
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ── FELT TEXTURE OVERLAY ── */
+body::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9998;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgba(10,26,14,0) 0px, rgba(10,26,14,0) 4px,
+      rgba(10,26,14,0.06) 4px, rgba(10,26,14,0.06) 5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(10,26,14,0) 0px, rgba(10,26,14,0) 4px,
+      rgba(10,26,14,0.06) 4px, rgba(10,26,14,0.06) 5px
+    );
+  opacity:0.8;
+}
+
+/* ── VIGNETTE ── */
+body::after{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9997;
+  background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+}
+
+canvas#bg-cv{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+
+.wrap{ max-width:960px; margin:0 auto; padding:0 28px 120px; position:relative; z-index:2; }
+
+/* ── REVEAL ── */
+.rev{ opacity:0; transform:translateY(22px);
+  transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
+.rev.left{ transform:translateX(-22px); }
+.rev.scale{ transform:scale(.96) translateY(10px); }
+.rev.on{ opacity:1; transform:none; }
+
+/* ══════════════════════════════════
+   HERO
+══════════════════════════════════ */
+.hero{
+  min-height:100vh; display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  text-align:center; padding:80px 0 100px;
+  position:relative;
+}
+
+.hero-suit{
+  font-size:clamp(36px,8vw,80px);
+  letter-spacing:.15em; color:rgba(200,150,42,0.15);
+  margin-bottom:24px; line-height:1;
+  animation:fadeIn 1s ease .1s both;
+  user-select:none;
+}
+.hero-suit .red-suit{ color:rgba(200,40,50,0.15); }
+
+.hero-eyebrow{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.4em;
+  text-transform:uppercase; color:var(--gold-dim);
+  margin-bottom:20px; animation:fadeIn .8s ease .3s both;
+}
+
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(52px,11vw,128px);
+  font-weight:900; line-height:.9; letter-spacing:-.02em;
+  margin-bottom:12px;
+  animation:heroIn 1s cubic-bezier(.16,1,.3,1) .15s both;
+}
+.hero-title .line1{
+  background:linear-gradient(135deg, var(--gold3) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  text-shadow:none;
+  display:block;
+}
+.hero-title .line2{
+  color:var(--red2); display:block;
+  text-shadow:0 0 40px rgba(204,34,51,0.3), 0 0 80px rgba(204,34,51,0.15);
+}
+
+.hero-divider{
+  width:120px; height:1px; margin:28px auto;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  animation:fadeIn 1s ease .8s both;
+  position:relative;
+}
+.hero-divider::before,.hero-divider::after{
+  content:'♦'; position:absolute; top:50%; transform:translateY(-50%);
+  font-size:8px; color:var(--gold);
+}
+.hero-divider::before{ left:-14px; }
+.hero-divider::after{ right:-14px; }
+
+.hero-desc{
+  font-family:var(--font-body); font-size:clamp(15px,2vw,19px);
+  color:var(--text-dim); max-width:580px; line-height:1.8;
+  margin:0 auto 36px;
+  animation:fadeIn .8s ease 1s both;
+}
+.hero-desc strong{ color:var(--gold2); }
+
+.hero-chips{
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  animation:fadeIn .8s ease 1.2s both;
+}
+.chip{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.12em;
+  text-transform:uppercase; padding:6px 16px;
+  border:1px solid rgba(200,150,42,0.3); color:var(--gold);
+  background:rgba(200,150,42,0.07);
+  border-radius:1px; display:inline-block;
+  transition:background .2s, border-color .2s, transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .2s;
+}
+.chip:hover{
+  background:rgba(200,150,42,0.16); border-color:rgba(200,150,42,.7);
+  transform:translateY(-2px); box-shadow:0 4px 16px rgba(200,150,42,.2);
+}
+.chip.red{
+  border-color:rgba(200,40,50,.3); color:var(--red2); background:rgba(200,40,50,.07);
+}
+.chip.red:hover{ background:rgba(200,40,50,.16); border-color:rgba(200,40,50,.7); box-shadow:0 4px 16px rgba(200,40,50,.2); }
+
+.scroll-hint{
+  position:absolute; bottom:28px; left:50%; transform:translateX(-50%);
+  display:flex; flex-direction:column; align-items:center; gap:8px;
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--text-muted);
+  animation:fadeIn 1s ease 1.8s both;
+}
+.scroll-hint-line{
+  width:1px; height:36px;
+  background:linear-gradient(to bottom, var(--gold), transparent);
+  animation:scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse{ 0%,100%{opacity:.3;height:36px} 50%{opacity:.9;height:48px} }
+
+@keyframes heroIn{ from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+
+/* ══════════════════════════════════
+   DIVIDERS
+══════════════════════════════════ */
+.div-line{
+  display:flex; align-items:center; gap:20px;
+  margin:64px 0 48px; opacity:.7;
+  transition:opacity .3s;
+}
+.div-line:hover{ opacity:1; }
+.div-line::before,.div-line::after{
+  content:''; flex:1; height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
+}
+.div-symbol{
+  font-family:var(--font-mono); font-size:11px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--gold); white-space:nowrap;
+}
+.div-line.red::before,.div-line.red::after{
+  background:linear-gradient(90deg,transparent,var(--red-dim),transparent);
+}
+.div-line.red .div-symbol{ color:var(--red2); }
+
+/* ══════════════════════════════════
+   SECTION LABELS
+══════════════════════════════════ */
+.sec-label{
+  display:inline-flex; align-items:center; gap:12px;
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.35em;
+  text-transform:uppercase; color:var(--gold-dim); margin-bottom:14px;
+}
+.sec-label::before{ content:'♠'; color:var(--gold); font-size:11px; }
+
+.sec-title{
+  font-family:var(--font-display);
+  font-size:clamp(24px,4vw,42px);
+  font-weight:700; color:var(--cream);
+  line-height:1.1; margin-bottom:28px; letter-spacing:-.01em;
+}
+.sec-title em{ font-style:italic; color:var(--gold2); }
+.sec-title .r{ color:var(--red2); }
+
+/* ══════════════════════════════════
+   CARDS
+══════════════════════════════════ */
+.card{
+  background:var(--bg2);
+  border:1px solid var(--border-g);
+  padding:26px 30px; margin-bottom:14px;
+  position:relative; overflow:hidden;
+  transition:border-color .35s, background .35s, transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .35s;
+}
+/* Corner pip decoration */
+.card::before{
+  content:'♦'; position:absolute; top:12px; right:14px;
+  font-size:11px; color:rgba(200,150,42,0.12);
+  transition:color .35s;
+}
+.card:hover::before{ color:rgba(200,150,42,0.3); }
+/* Shimmer */
+.card::after{
+  content:''; position:absolute; top:0; left:-100%; width:55%; height:100%;
+  background:linear-gradient(105deg,transparent,rgba(200,150,42,0.05),transparent);
+  transition:left .7s ease;
+}
+.card:hover::after{ left:160%; }
+.card:hover{
+  border-color:rgba(200,150,42,.35);
+  background:rgba(200,150,42,.025);
+  transform:translateY(-1px);
+  box-shadow:0 4px 28px rgba(200,150,42,.07), 0 0 0 1px rgba(200,150,42,.06);
+}
+
+.card-red{ border-color:var(--border-r); }
+.card-red::before{ content:'♥'; color:rgba(200,40,50,0.12); }
+.card-red:hover{ border-color:rgba(200,40,50,.35); background:rgba(200,40,50,.025); box-shadow:0 4px 28px rgba(200,40,50,.07); }
+.card-red:hover::before{ color:rgba(200,40,50,0.3); }
+.card-red::after{ background:linear-gradient(105deg,transparent,rgba(200,40,50,0.05),transparent); }
+
+.card-felt{
+  background:var(--felt); border-color:rgba(40,100,50,.3);
+}
+.card-felt::before{ content:'♣'; color:rgba(40,150,60,0.2); }
+.card-felt:hover{ border-color:rgba(40,150,60,.4); background:rgba(40,100,50,.08); box-shadow:0 4px 28px rgba(40,150,60,.06); }
+
+/* ══════════════════════════════════
+   CALLOUT / QUOTE
+══════════════════════════════════ */
+.callout{
+  background:rgba(200,150,42,0.05);
+  border:1px solid rgba(200,150,42,0.18);
+  border-left:3px solid var(--gold);
+  padding:22px 28px; margin:22px 0;
+  font-family:var(--font-body); font-style:italic;
+  font-size:18px; color:var(--text-dim); line-height:1.8;
+  position:relative; overflow:hidden;
+  transition:background .3s, box-shadow .3s;
+}
+.callout::after{
+  content:''; position:absolute; left:0; top:0; width:3px; height:0;
+  background:linear-gradient(to bottom,var(--gold3),var(--gold));
+  transition:height .5s ease;
+}
+.callout:hover::after{ height:100%; }
+.callout:hover{ background:rgba(200,150,42,.09); box-shadow:inset 3px 0 14px rgba(200,150,42,.06); }
+.callout strong{ font-style:normal; color:var(--gold2); }
+
+.callout-red{
+  background:rgba(200,40,50,0.05);
+  border-color:rgba(200,40,50,0.18); border-left-color:var(--red);
+}
+.callout-red::after{ background:linear-gradient(to bottom,var(--red2),var(--red)); }
+.callout-red:hover{ background:rgba(200,40,50,.09); box-shadow:inset 3px 0 14px rgba(200,40,50,.06); }
+.callout-red strong{ color:var(--red2); }
+
+/* ══════════════════════════════════
+   BODY TEXT
+══════════════════════════════════ */
+.body-text{ color:var(--text-dim); font-size:17px; line-height:1.85; margin-bottom:16px; }
+.body-text strong{ color:var(--text); }
+.hl{ color:var(--gold2); }
+.hl-r{ color:var(--red2); }
+.hl-g{ color:#60cc80; }
+
+/* ══════════════════════════════════
+   RULE LIST (proibições)
+══════════════════════════════════ */
+.rule-list{ list-style:none; display:flex; flex-direction:column; gap:12px; margin:16px 0; }
+.rule-list li{
+  font-size:16px; color:var(--text-dim);
+  padding:14px 18px 14px 48px;
+  position:relative; line-height:1.6;
+  background:var(--bg2); border:1px solid var(--border-r);
+  border-left:3px solid var(--red);
+  transition:background .3s, transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.rule-list li:hover{ background:rgba(200,40,50,.04); transform:translateX(3px); }
+.rule-list li::before{
+  content:'✕'; position:absolute; left:16px; top:14px;
+  color:var(--red); font-size:13px; font-weight:700;
+  font-family:var(--font-mono);
+}
+.rule-list li strong{ color:var(--red2); }
+
+.check-list{ list-style:none; display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+.check-list li{
+  font-size:16px; color:var(--text-dim);
+  padding:12px 18px 12px 44px;
+  position:relative; line-height:1.6;
+  background:var(--bg2); border:1px solid rgba(40,150,60,.18);
+  border-left:3px solid #40a050;
+  transition:background .3s, transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.check-list li:hover{ background:rgba(40,150,60,.04); transform:translateX(3px); }
+.check-list li::before{
+  content:'✓'; position:absolute; left:14px; top:12px;
+  color:#50c870; font-size:13px; font-weight:700;
+  font-family:var(--font-mono);
+}
+.check-list li strong{ color:#70d890; }
+
+.bullet-list{ list-style:none; display:flex; flex-direction:column; gap:8px; margin:12px 0; }
+.bullet-list li{
+  font-size:16px; color:var(--text-dim);
+  padding-left:20px; position:relative; line-height:1.6;
+}
+.bullet-list li::before{
+  content:'♦'; position:absolute; left:0;
+  color:var(--gold); font-size:10px; line-height:1.8;
+}
+
+/* ══════════════════════════════════
+   CPA TABLE
+══════════════════════════════════ */
+.cpa-table-wrap{ margin:24px 0; overflow-x:auto; }
+.cpa-table{
+  width:100%; border-collapse:separate; border-spacing:2px;
+}
+.cpa-table thead tr{
+  background:var(--bg3);
+}
+.cpa-table th{
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.3em;
+  text-transform:uppercase; color:var(--gold);
+  padding:12px 20px; text-align:left;
+  border-bottom:1px solid rgba(200,150,42,.25);
+  white-space:nowrap;
+}
+.cpa-table td{
+  font-family:var(--font-body); font-weight:600; font-size:16px;
+  color:var(--text-dim); padding:16px 20px;
+  background:var(--bg2); border:1px solid rgba(255,255,255,.04);
+  vertical-align:middle; transition:background .25s;
+}
+.cpa-table tr:hover td{ background:rgba(200,150,42,.04); }
+.cpa-table .casa-name{
+  font-family:var(--font-display); font-size:18px; font-weight:700;
+  color:var(--cream); letter-spacing:.04em;
+}
+.cpa-table .dep-val{
+  font-family:var(--font-mono); color:var(--gold-dim);
+}
+.cpa-table .cpa-val{
+  font-family:var(--font-display); font-size:22px; font-weight:700;
+  color:var(--gold2);
+  text-shadow:0 0 12px rgba(200,150,42,.3);
+}
+.cpa-table tr:nth-child(1) .cpa-val{
+  color:var(--gold3);
+  text-shadow:0 0 16px rgba(245,208,112,.4);
+}
+
+/* ══════════════════════════════════
+   FRAUD DETECT GRID
+══════════════════════════════════ */
+.detect-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:2px; background:rgba(200,150,42,.06); margin:20px 0;
+}
+.detect-cell{
+  background:var(--bg2); padding:18px 20px;
+  position:relative; overflow:hidden;
+  transition:background .3s, transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.detect-cell::before{
+  content:''; position:absolute; top:0; left:0; width:100%; height:2px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .4s ease;
+}
+.detect-cell:hover{ background:rgba(200,150,42,.04); transform:translateY(-2px); }
+.detect-cell:hover::before{ transform:scaleX(1); }
+.detect-label{
+  font-family:var(--font-mono); font-size:8px; letter-spacing:.25em;
+  text-transform:uppercase; color:var(--gold-dim); margin-bottom:8px;
+}
+.detect-val{
+  font-family:var(--font-body); font-size:15px; color:var(--text-dim); line-height:1.5;
+}
+
+/* ══════════════════════════════════
+   STRATEGY FUNNEL
+══════════════════════════════════ */
+.funnel{ display:flex; flex-direction:column; gap:2px; margin:24px 0; }
+.funnel-step{
+  display:flex; align-items:stretch; gap:0;
+  background:var(--bg2); border:1px solid var(--border-g);
+  border-left:3px solid var(--gold);
+  transition:background .3s, transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+  position:relative; overflow:hidden;
+}
+.funnel-step::after{
+  content:''; position:absolute; top:0; left:-100%; width:50%; height:100%;
+  background:linear-gradient(105deg,transparent,rgba(200,150,42,.05),transparent);
+  transition:left .6s ease;
+}
+.funnel-step:hover::after{ left:160%; }
+.funnel-step:hover{
+  background:rgba(200,150,42,.03); transform:translateX(4px);
+  box-shadow:-4px 0 14px rgba(200,150,42,.06);
+}
+.funnel-step:nth-child(2){ border-left-color:var(--gold2); }
+.funnel-step:nth-child(3){ border-left-color:var(--gold3); }
+.funnel-step:nth-child(4){ border-left-color:var(--red2); }
+.funnel-num{
+  font-family:var(--font-display); font-size:28px; font-weight:900;
+  color:var(--gold); padding:18px 22px;
+  min-width:70px; display:flex; align-items:center; justify-content:center;
+  border-right:1px solid rgba(255,255,255,.04);
+  opacity:.45; flex-shrink:0;
+  transition:opacity .3s;
+}
+.funnel-step:hover .funnel-num{ opacity:.9; }
+.funnel-step:nth-child(2) .funnel-num{ color:var(--gold2); }
+.funnel-step:nth-child(3) .funnel-num{ color:var(--gold3); }
+.funnel-step:nth-child(4) .funnel-num{ color:var(--red2); }
+.funnel-content{ padding:16px 22px; }
+.funnel-title{
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--gold-dim); margin-bottom:6px;
+}
+.funnel-text{ font-size:15px; color:var(--text-dim); line-height:1.6; }
+.funnel-text strong{ color:var(--text); }
+
+/* ══════════════════════════════════
+   TAGS
+══════════════════════════════════ */
+.tag-cloud{ display:flex; flex-wrap:wrap; gap:7px; margin:14px 0; }
+.tag{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.08em;
+  text-transform:uppercase; padding:4px 12px;
+  border:1px solid rgba(200,150,42,.15); color:var(--text-muted);
+  background:rgba(200,150,42,.03); display:inline-block;
+  transition:border-color .2s,color .2s,transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
+}
+.tag:hover{ transform:translateY(-2px); }
+.tag-gold{ border-color:rgba(200,150,42,.25);color:var(--gold);background:rgba(200,150,42,.06); }
+.tag-gold:hover{ background:rgba(200,150,42,.14);border-color:rgba(200,150,42,.6);box-shadow:0 4px 12px rgba(200,150,42,.18); }
+.tag-red{ border-color:rgba(200,40,50,.25);color:var(--red2);background:rgba(200,40,50,.06); }
+.tag-red:hover{ background:rgba(200,40,50,.14);border-color:rgba(200,40,50,.6);box-shadow:0 4px 12px rgba(200,40,50,.18); }
+.tag-green{ border-color:rgba(40,150,60,.25);color:#60cc80;background:rgba(40,150,60,.06); }
+.tag-green:hover{ background:rgba(40,150,60,.14);border-color:rgba(40,150,60,.6); }
+
+/* ══════════════════════════════════
+   COMPLIANCE BADGE
+══════════════════════════════════ */
+.compliance-row{
+  display:flex; align-items:flex-start; gap:14px;
+  padding:14px 16px; background:var(--bg2);
+  border:1px solid rgba(40,150,60,.15); border-left:3px solid #40a050;
+  margin-bottom:8px;
+  transition:background .3s, transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.compliance-row:hover{ background:rgba(40,150,60,.04); transform:translateX(3px); }
+.compliance-icon{
+  font-size:16px; line-height:1; padding-top:2px; flex-shrink:0;
+  filter:grayscale(0);
+}
+.compliance-text{ font-size:15px; color:var(--text-dim); line-height:1.65; }
+.compliance-text strong{ color:#70d890; }
+
+/* ══════════════════════════════════
+   FINAL BOX
+══════════════════════════════════ */
+.final-box{
+  background:linear-gradient(135deg,rgba(200,150,42,.07),rgba(200,40,50,.05));
+  border:1px solid rgba(200,150,42,.3);
+  padding:48px 44px; margin-top:44px;
+  position:relative; overflow:hidden;
+  transition:box-shadow .4s, border-color .4s;
+}
+.final-box::before{
+  content:'♠'; position:absolute; right:32px; top:50%; transform:translateY(-50%);
+  font-size:140px; color:rgba(200,150,42,.04);
+  line-height:1; pointer-events:none;
+  transition:color .4s, transform .4s;
+}
+.final-box:hover::before{ color:rgba(200,150,42,.09); transform:translateY(-50%) scale(1.1) rotate(15deg); }
+.final-box:hover{ box-shadow:0 0 60px rgba(200,150,42,.09); border-color:rgba(200,150,42,.5); }
+.final-box p{
+  font-family:var(--font-body); font-size:19px;
+  color:var(--text); line-height:1.9; position:relative; z-index:1;
+}
+.final-box strong{ color:var(--gold2); }
+.final-box .r{ color:var(--red2); }
+
+/* ══════════════════════════════════
+   TIP BOX
+══════════════════════════════════ */
+.tip-box{
+  background:rgba(200,150,42,.06);
+  border:1px solid rgba(200,150,42,.2);
+  padding:18px 24px; margin:18px 0;
+  display:flex; align-items:flex-start; gap:14px;
+}
+.tip-icon{ font-size:18px; flex-shrink:0; line-height:1.4; }
+.tip-text{ font-size:15px; color:var(--text-dim); line-height:1.7; }
+.tip-text strong{ color:var(--gold2); }
+
+/* ══════════════════════════════════
+   NAV DOTS
+══════════════════════════════════ */
+.sp-nav{
+  position:fixed; right:16px; top:50%; transform:translateY(-50%);
+  display:flex; flex-direction:column; gap:8px;
+  z-index:100; opacity:0; transition:opacity .4s;
+}
+.sp-nav.vis{ opacity:1; }
+.sp-dot{
+  width:4px; height:4px; border-radius:50%; background:var(--text-muted);
+  cursor:pointer !important;
+  transition:height .3s cubic-bezier(.16,1,.3,1), background .3s, border-radius .3s;
+  position:relative;
+}
+.sp-dot.on{ height:20px; border-radius:2px; background:var(--gold); box-shadow:0 0 8px var(--gold); }
+.sp-dot::after{
+  content:attr(data-label);
+  position:absolute; right:14px; top:50%; transform:translateY(-50%);
+  font-family:var(--font-mono); font-size:8px; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--gold); background:rgba(8,6,8,0.92);
+  border:1px solid rgba(200,150,42,.2); padding:3px 8px;
+  white-space:nowrap; pointer-events:none;
+  opacity:0; transition:opacity .2s;
+}
+.sp-dot:hover::after{ opacity:1; }
+
+/* ══════════════════════════════════
+   FOOTER
+══════════════════════════════════ */
+.footer{
+  border-top:1px solid rgba(200,150,42,.12);
+  padding:32px 0 16px; margin-top:80px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
+}
+.footer-handle{
+  font-family:var(--font-display); font-size:14px; font-weight:700;
+  background:linear-gradient(135deg,var(--gold3),var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+.footer-note{
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.15em;
+  color:var(--text-muted); text-transform:uppercase;
+}
+.back-top{
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--text-muted); background:none; border:none;
+  cursor:pointer !important; transition:color .2s; text-decoration:none;
+}
+.back-top::before{ content:'↑ '; }
+.back-top:hover{ color:var(--gold); }
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+@media(max-width:640px){
+  .wrap{ padding:0 16px 80px; }
+  .sp-nav{ display:none; }
+  .final-box{ padding:28px 20px; }
+  .final-box::before{ display:none; }
+  .cpa-table th,.cpa-table td{ padding:10px 14px; }
+  .hero-title{ font-size:clamp(44px,13vw,80px); }
+}
+</style>
+</head>
+<body>
+
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+<div id="prog"></div>
+<canvas id="bg-cv"></canvas>
+
+<!-- NAV DOTS -->
+<nav class="sp-nav" id="sp-nav">
+  <div class="sp-dot" data-label="O que é"></div>
+  <div class="sp-dot" data-label="Diretrizes"></div>
+  <div class="sp-dot" data-label="Compliance"></div>
+  <div class="sp-dot" data-label="Antifraude"></div>
+  <div class="sp-dot" data-label="Casas"></div>
+  <div class="sp-dot" data-label="Estratégia"></div>
+</nav>
+
+<div class="wrap">
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="sec-top">
+  <div class="hero-suit">♠ <span class="red-suit">♥</span> ♦ <span class="red-suit">♣</span></div>
+  <div class="hero-eyebrow">Guia Estratégico · Afiliados iGaming · 2026</div>
+  <h1 class="hero-title">
+    <span class="line1">CPA</span>
+    <span class="line2">NEGATIVO</span>
+  </h1>
+  <div class="hero-divider"></div>
+  <p class="hero-desc">
+    O modelo que paga pelo <strong>resultado real do jogo</strong> — não só pelo cadastro.
+    Entenda como funciona, as regras, e como operar dentro da lei.
+  </p>
+  <div class="hero-chips">
+    <span class="chip">FTD · First Time Deposit</span>
+    <span class="chip">GGR · Gross Gaming Revenue</span>
+    <span class="chip red">Lei 14.790/2023</span>
+    <span class="chip red">SPA · 2026</span>
+    <span class="chip">Afiliados</span>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-hint-line"></div>
+    <span>rolar</span>
+  </div>
+</section>
+
+<!-- ══ O QUE É CPA NEGATIVO ══ -->
+<section id="sec-conceito">
+  <div class="div-line rev"><span class="div-symbol">♦ O QUE É ♦</span></div>
+  <div class="rev left">
+    <div class="sec-label">Definição</div>
+    <h2 class="sec-title">CPA <em>Negativo</em></h2>
+  </div>
+
+  <div class="card rev">
+    <p class="body-text">CPA negativo é um modelo de comissão onde você (afiliado) é pago pelo cadastro de jogadores que depositam pela primeira vez <strong>(FTD)</strong> e <span class="hl">perdem dinheiro na plataforma</span> — o volume de jogadores que depositam e perdem.</p>
+    <p class="body-text">Isso "inverte" um pouco a lógica do CPA clássico: em vez de pagar só pela aquisição, o modelo recompensa o volume de jogadores que jogam e perdem — o famoso <strong>GGR</strong> (Gross Gaming Revenue gerado pelas perdas).</p>
+  </div>
+
+  <div class="callout rev">
+    O nome é CPA negativo porque o pagamento está atrelado ao resultado <strong>"negativo" para o jogador</strong> — perda dele = lucro da casa = <strong>comissão do afiliado</strong>.
+  </div>
+
+  <div class="card card-felt rev">
+    <div class="tag-cloud">
+      <span class="tag tag-gold">Afiliado recebe por FTD</span>
+      <span class="tag tag-gold">Jogador deposita + perde</span>
+      <span class="tag tag-red">GGR = lucro da casa</span>
+      <span class="tag tag-red">Comissão vem da perda</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ DIRETRIZES ══ -->
+<section id="sec-diretrizes">
+  <div class="div-line red rev"><span class="div-symbol">♠ DIRETRIZES ♠</span></div>
+  <div class="rev left">
+    <div class="sec-label">Regras do jogo</div>
+    <h2 class="sec-title">Práticas <em class="r">Proibidas</em></h2>
+  </div>
+
+  <div class="card rev">
+    <p class="body-text">O objetivo dessas regras é proteger o operador de tráfego "sujo" — porque no CPA negativo o pagamento vem das <strong>perdas reais dos jogadores</strong>. Se o tráfego for fraudado, a operadora não paga (ou cobra de volta) a comissão.</p>
+  </div>
+
+  <div class="callout callout-red rev">
+    <strong>CPA fraudado = zero.</strong> Qualquer prática proibida detectada = comissão zerada + risco de banimento permanente do programa.
+  </div>
+
+  <ul class="rule-list rev scale">
+    <li><strong>Contas duplicadas ou falsas:</strong> Criar jogadores repetidos (mesmo CPF, IP, device, família/amigos). Qualquer indício de multi-contas = fraude.</li>
+    <li><strong>Uso de dados de terceiros:</strong> CPF alheio, dados roubados ou sintéticos — muito comum em fraudes de CPA.</li>
+    <li><strong>Incentivo aos jogadores (incent traffic):</strong> Prometer dinheiro, bônus extra, rakeback ou qualquer recompensa para o jogador cadastrar/depositar via seu link. Proibido total.</li>
+    <li><strong>Bots, scripts, automação:</strong> Uso de robôs, crawlers, refresh automático, iframes ou ferramentas que simulam cadastros/depósitos.</li>
+    <li><strong>Bonus abuse:</strong> Encorajar jogadores que só abusam de bônus sem jogar de verdade.</li>
+    <li><strong>Chargeback ou estorno:</strong> Se o jogador deposita e depois contesta o pagamento (PIX, cartão etc.), a comissão é anulada.</li>
+    <li><strong>Tráfego spam ou enganoso:</strong> E-mail em massa sem consentimento, promessas falsas de ganho ("garantido"), publicidade que viola regras da SPA.</li>
+    <li><strong>Self-referral:</strong> Você (afiliado) ou sua equipe jogar via seu próprio link.</li>
+  </ul>
+</section>
+
+<!-- ══ COMPLIANCE ══ -->
+<section id="sec-compliance">
+  <div class="div-line rev"><span class="div-symbol">♣ COMPLIANCE ♣</span></div>
+  <div class="rev left">
+    <div class="sec-label">Regulamentação Brasileira</div>
+    <h2 class="sec-title">Regras <em>Obrigatórias</em> · Brasil 2026</h2>
+  </div>
+
+  <div class="card rev">
+    <p class="body-text">Com a regulamentação da <strong>Lei 14.790/2023</strong> e fiscalização da SPA, os operadores exigem conformidade total em cada jogador cadastrado.</p>
+  </div>
+
+  <div class="rev scale">
+    <div class="compliance-row">
+      <div class="compliance-icon">🪪</div>
+      <div class="compliance-text"><strong>KYC Completo:</strong> Todo jogador deve validar CPF + biometria facial (Face Match com detecção de vida). Cadastro sem isso não vale para CPA.</div>
+    </div>
+    <div class="compliance-row">
+      <div class="compliance-icon">💳</div>
+      <div class="compliance-text"><strong>Jogador real e titular:</strong> Depósito só pode ser feito com conta bancária/PIX no nome do próprio jogador — não de terceiro.</div>
+    </div>
+    <div class="compliance-row">
+      <div class="compliance-icon">🔞</div>
+      <div class="compliance-text"><strong>Idade mínima:</strong> 18+ com verificação obrigatória.</div>
+    </div>
+    <div class="compliance-row">
+      <div class="compliance-icon">📍</div>
+      <div class="compliance-text"><strong>Localização:</strong> Jogador deve estar fisicamente no Brasil no momento do cadastro e depósito.</div>
+    </div>
+    <div class="compliance-row">
+      <div class="compliance-icon">🏛️</div>
+      <div class="compliance-text"><strong>Integração com Sigap:</strong> Operadores reportam em tempo real dados de jogadores, depósitos e apostas para o governo. Qualquer irregularidade é detectada rápido.</div>
+    </div>
+    <div class="compliance-row">
+      <div class="compliance-icon">🔍</div>
+      <div class="compliance-text"><strong>AML (anti-lavagem):</strong> Monitoramento de padrões suspeitos — depósitos altos seguidos de saque, comportamento atípico.</div>
+    </div>
+    <div class="compliance-row">
+      <div class="compliance-icon">📢</div>
+      <div class="compliance-text"><strong>Publicidade responsável:</strong> Você deve divulgar risco de jogo, não prometer ganhos fáceis e só promover marcas licenciadas pela SPA.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ANTIFRAUDE ══ -->
+<section id="sec-antifraude">
+  <div class="div-line red rev"><span class="div-symbol">♥ ANTIFRAUDE ♥</span></div>
+  <div class="rev left">
+    <div class="sec-label">Detecção</div>
+    <h2 class="sec-title">Como os operadores <em class="r">detectam</em> fraude</h2>
+  </div>
+
+  <div class="detect-grid rev scale">
+    <div class="detect-cell">
+      <div class="detect-label">Sistema Automático</div>
+      <div class="detect-val">IP, device fingerprint, comportamento de navegação analisados em tempo real</div>
+    </div>
+    <div class="detect-cell">
+      <div class="detect-label">Análise Manual</div>
+      <div class="detect-val">Volume alto ou padrões estranhos — muitos depósitos mínimos sem jogo real</div>
+    </div>
+    <div class="detect-cell">
+      <div class="detect-label">Sinais Vermelhos</div>
+      <div class="detect-val">Taxa de retenção baixa ou chargeback alto disparam revisão imediata</div>
+    </div>
+    <div class="detect-cell">
+      <div class="detect-label">Auditorias</div>
+      <div class="detect-val">Revisões semanais e mensais nas contas dos afiliados de todos os programas</div>
+    </div>
+  </div>
+
+  <div class="tip-box rev">
+    <div class="tip-icon">💡</div>
+    <div class="tip-text"><strong>Dica prática:</strong> No painel do programa (ex.: iHub), você vê em tempo real quais jogadores foram aprovados ou rejeitados por antifraude — acompanhe esse número diariamente.</div>
+  </div>
+</section>
+
+<!-- ══ CASAS ══ -->
+<section id="sec-casas">
+  <div class="div-line rev"><span class="div-symbol">♦ CASAS ATIVAS ♦</span></div>
+  <div class="rev left">
+    <div class="sec-label">Tabela de Comissões</div>
+    <h2 class="sec-title">3 Casas <em>Liberadas</em> · CPA Atual</h2>
+  </div>
+
+  <div class="callout rev">
+    O trabalho é trazer novos usuários para a plataforma, fazer eles se cadastrar e depositar o <strong>valor mínimo necessário</strong> para a comissão ser creditada.
+  </div>
+
+  <div class="cpa-table-wrap rev scale">
+    <table class="cpa-table">
+      <thead>
+        <tr>
+          <th>Casa</th>
+          <th>Depósito Mínimo</th>
+          <th>CPA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="casa-name">SUPERBET</span></td>
+          <td><span class="dep-val">R$ 50,00</span></td>
+          <td><span class="cpa-val">R$ 180</span></td>
+        </tr>
+        <tr>
+          <td><span class="casa-name">SPORTINGBET</span></td>
+          <td><span class="dep-val">R$ 30,00</span></td>
+          <td><span class="cpa-val">R$ 120</span></td>
+        </tr>
+        <tr>
+          <td><span class="casa-name">JONBET</span></td>
+          <td><span class="dep-val">R$ 30,00</span></td>
+          <td><span class="cpa-val">R$ 120</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card card-felt rev">
+    <p class="body-text" style="margin:0;">
+      <span class="hl">Superbet</span> paga o maior CPA (R$ 180) mas exige depósito mínimo maior (R$ 50). 
+      <span class="hl">Sportingbet</span> e <span class="hl">Jonbet</span> têm entrada mais baixa (R$ 30) com CPA de R$ 120 — ótimas para perfis de público com ticket menor.
+    </p>
+  </div>
+</section>
+
+<!-- ══ ESTRATÉGIA ══ -->
+<section id="sec-estrategia">
+  <div class="div-line rev"><span class="div-symbol">♠ ESTRATÉGIA ♠</span></div>
+  <div class="rev left">
+    <div class="sec-label">Como operar</div>
+    <h2 class="sec-title">O <em>Funil</em> de Conversão</h2>
+  </div>
+
+  <div class="callout rev">
+    A estratégia consiste em usar <strong>perfis de nicho nas redes sociais</strong>, gerar tráfego orgânico relevante e converter o público no privado via narrativa de conteúdo — sempre dentro das <span class="hl-r">regras da SPA</span> e dos programas de afiliados.
+  </div>
+
+  <div class="funnel rev scale">
+    <div class="funnel-step">
+      <div class="funnel-num">01</div>
+      <div class="funnel-content">
+        <div class="funnel-title">Geração de Tráfego · Redes Sociais</div>
+        <div class="funnel-text">Perfis de nicho (esportes, entretenimento, lifestyle) produzem conteúdo orgânico relevante que atrai o público-alvo — sem spam e sem promessas falsas de ganho.</div>
+      </div>
+    </div>
+    <div class="funnel-step">
+      <div class="funnel-num">02</div>
+      <div class="funnel-content">
+        <div class="funnel-title">Captura · Telegram / WhatsApp</div>
+        <div class="funnel-text">O público é direcionado para um canal ou grupo privado onde a narrativa de conteúdo continua — informação, dicas, análises ou entretenimento ligado ao universo das apostas.</div>
+      </div>
+    </div>
+    <div class="funnel-step">
+      <div class="funnel-num">03</div>
+      <div class="funnel-content">
+        <div class="funnel-title">Conversão · Link de Afiliado</div>
+        <div class="funnel-text">No momento certo da jornada, o usuário recebe o <strong>link rastreado</strong> da casa de apostas. Ele se cadastra, faz o FTD e o CPA é creditado — desde que passe pelo KYC e antifraude.</div>
+      </div>
+    </div>
+    <div class="funnel-step">
+      <div class="funnel-num">04</div>
+      <div class="funnel-content">
+        <div class="funnel-title">Monitoramento · Painel iHub</div>
+        <div class="funnel-text">Acompanhe em tempo real: jogadores aprovados vs rejeitados, FTDs confirmados, comissões creditadas. <strong>Otimize o funil</strong> baseado nos dados reais de conversão.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="div-line rev"><span class="div-symbol">♣ BOAS PRÁTICAS ♣</span></div>
+
+  <div class="card rev">
+    <div class="sec-label" style="margin-bottom:12px;">Como garantir aprovação dos FTDs</div>
+    <ul class="check-list">
+      <li>Comunicar claramente que é necessário <strong>CPF próprio e conta bancária no mesmo nome</strong></li>
+      <li>Orientar o usuário a fazer o <strong>KYC completo</strong> (biometria + validação facial) antes do depósito</li>
+      <li>Usar linguagem de <strong>publicidade responsável</strong> — não prometer ganhos garantidos</li>
+      <li>Trabalhar apenas com <strong>marcas licenciadas pela SPA</strong></li>
+      <li>Acompanhar o painel diariamente para identificar rejeições e ajustar a fonte de tráfego</li>
+    </ul>
+  </div>
+
+  <div class="final-box rev">
+    <p>
+      O CPA negativo é um dos modelos mais rentáveis do marketing de afiliados em iGaming — mas também um dos mais exigentes em qualidade de tráfego. <strong>Cada FTD aprovado vale entre R$ 120 e R$ 180.</strong> A escala vem do volume de usuários reais, qualificados e em conformidade com as <span class="r">regras da SPA e da Lei 14.790/2023</span>. Opere dentro das regras e o modelo se paga com consistência.
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer rev">
+  <div class="footer-handle">CPA NEGATIVO · Guia 2026</div>
+  <a class="back-top" href="#sec-top">topo</a>
+  <div class="footer-note">iGaming · Afiliados · Brasil · SPA</div>
+</footer>
+
+</div><!-- end wrap -->
+
+<script>
+/* ══ CURSOR ══ */
+(function(){
+  if(!window.matchMedia||window.matchMedia('(hover:none),(pointer:coarse)').matches) return;
+  var dot=document.getElementById('cur-dot'),ring=document.getElementById('cur-ring');
+  if(!dot||!ring) return;
+  var mx=-200,my=-200,rx=-200,ry=-200;
+  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;});
+  document.addEventListener('mousedown',function(){ring.classList.add('h');});
+  document.addEventListener('mouseup',function(){ring.classList.remove('h');});
+  document.querySelectorAll('a,button,.card,.chip,.tag,.sp-dot,.funnel-step,.compliance-row,.detect-cell').forEach(function(el){
+    el.addEventListener('mouseenter',function(){ring.classList.add('h');});
+    el.addEventListener('mouseleave',function(){ring.classList.remove('h');});
+  });
+  (function tick(){
+    rx+=(mx-rx)*0.1; ry+=(my-ry)*0.1;
+    dot.style.left=mx+'px'; dot.style.top=my+'px';
+    ring.style.left=rx+'px'; ring.style.top=ry+'px';
+    requestAnimationFrame(tick);
+  })();
+})();
+
+/* ══ CANVAS — playing cards & chips floating ══ */
+(function(){
+  var cv=document.getElementById('bg-cv');
+  if(!cv) return;
+  var ctx=null;
+  try{ ctx=cv.getContext('2d'); }catch(e){ return; }
+
+  var W,H;
+  function resize(){ W=cv.width=window.innerWidth; H=cv.height=window.innerHeight; }
+
+  /* Floating symbols */
+  var symbols=['♠','♥','♦','♣','7','A','K','Q'];
+  var items=[];
+
+  function makeItem(){
+    var s=symbols[Math.floor(Math.random()*symbols.length)];
+    var isRed=s==='♥'||s==='♦';
+    return {
+      sym:s, x:Math.random()*W, y:H+30,
+      size:10+Math.random()*22,
+      vx:(Math.random()-.5)*0.4, vy:-(0.3+Math.random()*0.7),
+      rot:Math.random()*Math.PI*2, vrot:(Math.random()-.5)*0.008,
+      alpha:0.04+Math.random()*0.1,
+      red:isRed
+    };
+  }
+
+  /* Particles */
+  var particles=[];
+  function makeParticle(){
+    return {
+      x:Math.random()*W, y:Math.random()*H,
+      vx:(Math.random()-.5)*0.25, vy:(Math.random()-.5)*0.25,
+      r:0.8+Math.random()*1.2,
+      alpha:0.06+Math.random()*0.14,
+      gold:Math.random()<.6,
+      pulse:Math.random()*Math.PI*2,
+      ps:0.008+Math.random()*0.015
+    };
+  }
+
+  var running=true;
+  document.addEventListener('visibilitychange',function(){
+    running=!document.hidden; if(running) requestAnimationFrame(draw);
+  });
+
+  function draw(){
+    if(!running) return;
+    try{
+      ctx.clearRect(0,0,W,H);
+
+      /* particles */
+      particles.forEach(function(p){
+        p.pulse+=p.ps; p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+        if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+        var a=p.alpha*(0.6+Math.sin(p.pulse)*0.4);
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.gold?'rgba(200,150,42,'+a+')':'rgba(200,40,50,'+a+')';
+        ctx.fill();
+      });
+
+      /* floating symbols */
+      items.forEach(function(it){
+        it.x+=it.vx; it.y+=it.vy; it.rot+=it.vrot;
+        ctx.save();
+        ctx.translate(it.x,it.y);
+        ctx.rotate(it.rot);
+        ctx.font='bold '+it.size+'px Georgia,serif';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillStyle=it.red?'rgba(200,40,50,'+it.alpha+')':'rgba(200,150,42,'+it.alpha+')';
+        ctx.fillText(it.sym,0,0);
+        ctx.restore();
+        if(it.y<-50||it.x<-50||it.x>W+50){ Object.assign(it,makeItem()); it.y=H+30; }
+      });
+
+      /* spawn new items slowly */
+      if(items.length<30&&Math.random()<0.015) items.push(makeItem());
+    }catch(e){}
+    requestAnimationFrame(draw);
+  }
+
+  try{
+    resize();
+    for(var i=0;i<60;i++) particles.push(makeParticle());
+    for(var j=0;j<20;j++){
+      var it=makeItem(); it.y=Math.random()*H;
+      items.push(it);
+    }
+    window.addEventListener('resize',resize);
+    draw();
+  }catch(e){}
+})();
+
+/* ══ PROGRESS ══ */
+(function(){
+  var bar=document.getElementById('prog');
+  if(!bar) return;
+  window.addEventListener('scroll',function(){
+    var pct=window.scrollY/(document.documentElement.scrollHeight-window.innerHeight)*100;
+    bar.style.width=(isFinite(pct)?pct:0)+'%';
+  },{passive:true});
+})();
+
+/* ══ SCROLL REVEAL ══ */
+(function(){
+  if(!window.IntersectionObserver){
+    document.querySelectorAll('.rev').forEach(function(el){el.classList.add('on');});
+    return;
+  }
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var siblings=[].slice.call(e.target.parentElement?e.target.parentElement.querySelectorAll('.rev:not(.on)'):[]);
+      var idx=siblings.indexOf(e.target);
+      setTimeout(function(){e.target.classList.add('on');},Math.min(idx*65,300));
+      io.unobserve(e.target);
+    });
+  },{threshold:.06,rootMargin:'0px 0px -28px 0px'});
+  document.querySelectorAll('.rev').forEach(function(el){io.observe(el);});
+})();
+
+/* ══ SECTION NAV ══ */
+(function(){
+  var nav=document.getElementById('sp-nav');
+  if(!nav||!window.IntersectionObserver) return;
+  var dots=nav.querySelectorAll('.sp-dot');
+  var secIds=['sec-conceito','sec-diretrizes','sec-compliance','sec-antifraude','sec-casas','sec-estrategia'];
+  var secs=secIds.map(function(id){return document.getElementById(id);});
+
+  dots.forEach(function(d,i){
+    d.addEventListener('click',function(){if(secs[i])secs[i].scrollIntoView({behavior:'smooth'});});
+    d.addEventListener('touchend',function(e){e.preventDefault();if(secs[i])secs[i].scrollIntoView({behavior:'smooth'});});
+  });
+
+  var hero=document.querySelector('.hero');
+  if(hero){
+    new IntersectionObserver(function(e){
+      nav.classList.toggle('vis',!e[0].isIntersecting);
+    },{threshold:0}).observe(hero);
+  }
+
+  secs.filter(Boolean).forEach(function(s,i){
+    new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(!e.isIntersecting) return;
+        dots.forEach(function(d,j){d.classList.toggle('on',j===i);});
+      });
+    },{threshold:.12,rootMargin:'-10% 0px -55% 0px'}).observe(s);
+  });
+})();
+
+/* ══ SAFETY NET ══ */
+setTimeout(function(){
+  document.querySelectorAll('.rev:not(.on)').forEach(function(el){
+    el.classList.add('on');
+  });
+},2800);
+</script>
+</body>
+</html>
